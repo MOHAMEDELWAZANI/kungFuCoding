@@ -14,6 +14,7 @@ Problems/
 ├─ tracker.json     the source of truth (status, difficulty, dates, complexity)
 ├─ problems/        one notebook per LeetCode problem
 ├─ database_problems/  SQL problems - each notebook runs your query against a real SQLite db
+├─ MLproblems/      machine learning - TensorTonic problems + the MNIST classic
 ├─ tp/              practical exercises (TP) - bigger, multi-part, not from LeetCode
 ├─ learn_json/      learning track: the json module, from zero
 ├─ projects/        real projects built out of what I learned
@@ -95,6 +96,41 @@ LeetCode grades MySQL; where the two engines differ, the notebook says so.
 | 184 | [Department Highest Salary](database_problems/184_DepartmentHighestSalary.ipynb) | Medium | `GROUP BY` vs `PARTITION BY` | todo |
 | 185 | [Department Top Three Salaries](database_problems/185_DepartmentTopThreeSalaries.ipynb) | Hard | `DENSE_RANK` vs `RANK` vs `ROW_NUMBER` | todo |
 | 262 | [Trips and Users](database_problems/262_TripsAndUsers.ipynb) | Hard | four requirements at once | todo |
+
+### Machine Learning
+
+From [TensorTonic](https://tensortonic.com), plus MNIST. **NumPy only** — no
+sklearn, no PyTorch, no scipy.
+
+Same layout as the LeetCode notebooks: statement, an approach cell that points at
+the traps without giving the code, an empty `class Solution`, then a test cell
+you can run immediately — every case prints `not implemented` until you fill the
+method in, then `OK` or the value it wanted.
+
+| Problem | Difficulty | Topic | The trap | Status |
+|---|---|---|---|---|
+| [Implement Dot Product](MLproblems/DotProduct.ipynb) | Easy | Linear Algebra | `np.float64` is not `float`; the `ValueError` guard is yours | todo |
+| [Implement Euclidean Distance](MLproblems/EuclideanDistance.ipynb) | Easy | Linear Algebra | predict what `1e200` returns before you run it | todo |
+| [Implement Manhattan Distance](MLproblems/ManhattanDistance.ipynb) | Easy | Linear Algebra | when are L1 and L2 equal? answer before the table prints | todo |
+| [Implement Cosine Similarity](MLproblems/CosineSimilarity.ipynb) | Easy | Linear Algebra | zero vector → `0.0`; guard *before* dividing, not after | todo |
+| [Jaccard Similarity](MLproblems/JaccardSimilarity.ipynb) | Easy | Recommender Systems | empty/empty raises — same bug shape as the zero vector | todo |
+| [Adjusted Cosine Similarity](MLproblems/AdjustedCosineSimilarity.ipynb) | Medium | Recommender Systems | `R.mean(axis=1)` is wrong; `0` means *unrated* | todo |
+| [MNIST Handwritten Digits](MLproblems/MnistDigits.ipynb) | Medium | Classification | four models, backprop by hand | todo |
+
+**MNIST** — the IDX loader and the ASCII viewer are given (plumbing, marked
+don't-edit); the four models are the exercise. Build them in order, each one
+fixing what the last got wrong:
+
+| | Model | Target accuracy |
+|---|---|---|
+| V1 | Nearest centroid | ~0.82 |
+| V2 | k-NN (`k=3`) | ~0.94 |
+| V3 | Softmax regression | ~0.92 |
+| V4 | Neural net, 784→256→10 ReLU | **>0.97** |
+
+Targets are "am I in the right neighbourhood", not answers. V3 scoring *below* V2
+is expected — arguing why you would still ship V3 is part of the problem. The
+loader downloads ~11 MB on first run and caches to `data/mnist.npz` (gitignored).
 
 ### TP
 

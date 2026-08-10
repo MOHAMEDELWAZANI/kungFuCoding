@@ -1,7 +1,7 @@
 {
  "owner": "medwa",
  "started_on": "2026-07-20",
- "last_updated": "2026-08-03",
+ "last_updated": "2026-08-10",
  "stats": {
   "total_attempted": 16,
   "total_solved": 13,
@@ -1034,6 +1034,152 @@
    "file": "problems/RedBlackTree.ipynb",
    "url": "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree",
    "notes": "Added 2026-08-03 by request - they built one in C before and want it back in Python. Custom problem (not on LeetCode): full RedBlackTree class - insert/search/delete keeping the five rules, all O(log n). Scaffold corrects a memory slip: 'left rotation / left-right rotation' as THE toolkit is AVL vocabulary; red-black adds the recolor-only red-uncle case (the zig-zag double rotation is their 'left-right' memory). Two phases: A insert+fixup (red uncle -> recolor+climb; black uncle -> straighten zig-zag, one rotation, swap colors), B delete (transplant + successor + double-black sibling cases; NIL sentinel recommended - the C trick). Harness contract: tree.root, node .key/.left/.right/.color 'R'/'B'; None or key-None sentinel both count as black leaves; parent pointers not read. No expected-output lists (many legal trees hold the same keys - same reason as #379): validate() re-derives all five rules + inorder-sorted + contents-vs-referee-set + the 2*log2(n+1) height bound after EVERY mutation; failures print the op log, broken rule, and a sideways color dump. 13 named cases (7 insert incl. climb-1..15 and both zig-zags, 6 delete incl. red leaf / one-red-child / double black / successor surgery / drain-to-empty / absent-key no-op), a 300-ordered-insert climb, 4 seeded stress mixes up to 3000 ops on 10^4 keys. Verified: reference CLRS implementation passes 18/18 in ~2.8s; five broken versions all caught (no insert fixup, no delete fixup, all-black plain BST -> height bound snaps, no-op delete, lying search). Siblings pointed at: #98, #110, #450, #701. ATTEMPT 1 (2026-08-03): the tree ITSELF already works - it is the exact implementation that passed all 14 leaderboard tests in #1244 the same day (CLRS insert/delete, both fixups, NIL sentinel). What fails here is the PORT to this notebook's contract, a half-finished rename: the Node class was updated to .key (per the harness contract) but the tree body was pasted from the leaderboard copy and still says .data everywhere - so 'Node(data=None)' in __init__ raises TypeError: unexpected keyword argument 'data' before any test runs, and every comparison (new_node.data < current.data, key == node.data) would AttributeError after that. SECOND LANDMINE waiting behind the rename, not yet hit: this notebook defines RED, BLACK = 'R', 'B' and Node defaults to color=RED, but the pasted tree compares against the old string literals ('z.parent.color == \"red\"', sets 'black') - 'R' != 'red', so NO fixup branch would ever fire and the tree would silently degrade to a plain BST until the validate() height bound snaps at the climb-1..15 case (this is exactly broken-version 3 the harness was calibrated against). Also minor: Node.__init__ takes a parent param but assigns self.parent = None regardless - harmless (every caller sets .parent explicitly) but worth deleting. The fix is one consistent rename: data -> key throughout the tree body, and every color literal -> the RED/BLACK constants."
+  },
+  {
+   "id": null,
+   "slug": "implement-dot-product",
+   "title": "Implement Dot Product",
+   "difficulty": "easy",
+   "topics": [
+    "linear-algebra",
+    "numpy"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/DotProduct.ipynb",
+   "url": "https://tensortonic.com/problems/implement-dot-product",
+   "notes": "The maths is one line; the requirements list is the problem. Nudge: np.array vs np.asarray for 'lists or arrays', np.float64 is not float, .ndim for the 1-D check, and the ValueError guard is yours to add. Optional 2nd/3rd versions (np.sum(x*y), Python loop) feed the benchmark cell."
+  },
+  {
+   "id": null,
+   "slug": "implement-euclidean-distance",
+   "title": "Implement Euclidean Distance",
+   "difficulty": "easy",
+   "topics": [
+    "linear-algebra",
+    "numpy",
+    "distance"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/EuclideanDistance.ipynb",
+   "url": "https://tensortonic.com/problems/implement-euclidean-distance",
+   "notes": "Two spellings: the formula step by step, or spot that sqrt(sum(d^2)) IS a vector length and use np.linalg. Follow-up cell asks them to PREDICT what [1e200,1e200] returns before running it (both routes overflow to inf even though the answer fits in float64) and to write the rescaling fix."
+  },
+  {
+   "id": null,
+   "slug": "implement-manhattan-distance",
+   "title": "Implement Manhattan Distance",
+   "difficulty": "easy",
+   "topics": [
+    "linear-algebra",
+    "numpy",
+    "distance"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/ManhattanDistance.ipynb",
+   "url": "https://tensortonic.com/problems/implement-manhattan-distance",
+   "notes": "Same skeleton as Euclidean with one op swapped. 2nd version via np.linalg.norm(ord=1) so they meet ord= as the knob between L1/L2/Chebyshev. Closing question: when are L1 and L2 equal? Answer on paper, then check the table."
+  },
+  {
+   "id": null,
+   "slug": "implement-cosine-similarity",
+   "title": "Implement Cosine Similarity",
+   "difficulty": "easy",
+   "topics": [
+    "linear-algebra",
+    "numpy",
+    "similarity"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/CosineSimilarity.ipynb",
+   "url": "https://tensortonic.com/problems/implement-cosine-similarity",
+   "notes": "Reuses their dot product + norm. The graded case is the zero vector: guard BEFORE dividing, not nan-check after - notebook asks them to work out why the ordering matters. Optional: unit-normalise-then-dot (the vector-DB trick) and a one-vs-matrix version using axis= and np.divide(where=)."
+  },
+  {
+   "id": null,
+   "slug": "jaccard-similarity",
+   "title": "Jaccard Similarity",
+   "difficulty": "easy",
+   "topics": [
+    "recommender-systems",
+    "sets"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/JaccardSimilarity.ipynb",
+   "url": "https://tensortonic.com/problems/jaccard-similarity",
+   "notes": "No NumPy - pure Python sets. Empty/empty is ZeroDivisionError, so guard before dividing (same shape of bug as the cosine zero vector - the notebook points that out). 2nd version uses |A u B| = |A| + |B| - |A n B| and asks them to justify the identity. Closing cell is real collaborative filtering on 4 watchlists."
+  },
+  {
+   "id": null,
+   "slug": "adjusted-cosine-similarity",
+   "title": "Adjusted Cosine Similarity",
+   "difficulty": "medium",
+   "topics": [
+    "recommender-systems",
+    "collaborative-filtering",
+    "numpy"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/AdjustedCosineSimilarity.ipynb",
+   "url": "https://tensortonic.com/problems/adjusted-cosine-similarity",
+   "notes": "Three traps, all flagged without the code: (1) R.mean(axis=1) is WRONG, 0 means unrated; (2) only users who rated BOTH items count; (3) the mean is the user's whole-row baseline but the sums run only over co-raters. Told to write the loop version first, then vectorize - the test cross-checks the two on 64 random pairs. The [[1,2],[2,4],[3,6]] case is -1.0 not +1.0 and the notebook warns them not to 'fix' it, but to work out why."
+  },
+  {
+   "id": null,
+   "slug": "mnist-handwritten-digits",
+   "title": "MNIST - Handwritten Digit Recognition",
+   "difficulty": "medium",
+   "topics": [
+    "classification",
+    "neural-networks",
+    "numpy",
+    "backprop"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/MnistDigits.ipynb",
+   "url": "http://yann.lecun.com/exdb/mnist/",
+   "notes": "Not TensorTonic - the classic dataset, NumPy only, backprop written by hand. IDX loader + ASCII viewer are GIVEN (plumbing, marked don't-edit); caches to data/mnist.npz, gitignored, ~11 MB, auto-downloads. Four models to build, each fixing the last one's flaw: nearest centroid (~0.82) -> k-NN (~0.94) -> softmax regression (~0.92) -> 784-256-10 ReLU net (>0.97). Targets given as 'right neighbourhood' checks, not answers. V3 scoring BELOW V2 is expected and is the point. Derivations left to them: the ||x-c||^2 expansion so V1/V2 are one matmul, argpartition for k-NN, d(cross-entropy)/d(logits) = p - onehot(y), and the full backward pass + He init / momentum / lr decay for V4. Closing note: all four are permutation-invariant, so ~98% is the ceiling until a convolution."
   }
  ]
 }
