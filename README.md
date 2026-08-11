@@ -115,7 +115,15 @@ method in, then `OK` or the value it wanted.
 | [Implement Cosine Similarity](MLproblems/CosineSimilarity.ipynb) | Easy | Linear Algebra | zero vector → `0.0`; guard *before* dividing, not after | todo |
 | [Jaccard Similarity](MLproblems/JaccardSimilarity.ipynb) | Easy | Recommender Systems | empty/empty raises — same bug shape as the zero vector | todo |
 | [Adjusted Cosine Similarity](MLproblems/AdjustedCosineSimilarity.ipynb) | Medium | Recommender Systems | `R.mean(axis=1)` is wrong; `0` means *unrated* | todo |
+| [Soft Cosine Similarity](MLproblems/SoftCosineSimilarity.ipynb) | Medium | NLP | `S` symmetric with a unit diagonal is **not** enough — if it isn't PSD, `sqrt` returns `nan` | todo |
 | [MNIST Handwritten Digits](MLproblems/MnistDigits.ipynb) | Medium | Classification | four models, backprop by hand | todo |
+
+**Soft cosine** is the first one that isn't a one-liner. `a · b` becomes
+`aᵀ S b`, so write `bilinear(x, S, y)` once and call it three times. Two optional
+follow-ups are scaffolded in the same notebook: the Cholesky version
+(`S = L Lᵀ` → soft cosine *is* plain cosine on `Lᵀa` and `Lᵀb`, factored once,
+which is how a vector DB serves it at ordinary-cosine speed) and
+`soft_cosine_matrix`, one query against every row.
 
 **MNIST** — the IDX loader and the ASCII viewer are given (plumbing, marked
 don't-edit); the four models are the exercise. Build them in order, each one

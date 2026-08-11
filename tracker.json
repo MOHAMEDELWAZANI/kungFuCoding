@@ -1,7 +1,7 @@
 {
  "owner": "medwa",
  "started_on": "2026-07-20",
- "last_updated": "2026-08-10",
+ "last_updated": "2026-08-11",
  "stats": {
   "total_attempted": 16,
   "total_solved": 13,
@@ -1158,6 +1158,28 @@
    "file": "MLproblems/AdjustedCosineSimilarity.ipynb",
    "url": "https://tensortonic.com/problems/adjusted-cosine-similarity",
    "notes": "Three traps, all flagged without the code: (1) R.mean(axis=1) is WRONG, 0 means unrated; (2) only users who rated BOTH items count; (3) the mean is the user's whole-row baseline but the sums run only over co-raters. Told to write the loop version first, then vectorize - the test cross-checks the two on 64 random pairs. The [[1,2],[2,4],[3,6]] case is -1.0 not +1.0 and the notebook warns them not to 'fix' it, but to work out why."
+  },
+  {
+   "id": null,
+   "slug": "soft-cosine-similarity",
+   "title": "Soft Cosine Similarity",
+   "difficulty": "medium",
+   "topics": [
+    "nlp",
+    "similarity",
+    "numpy",
+    "linear-algebra"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/SoftCosineSimilarity.ipynb",
+   "url": "https://tensortonic.com/problems/soft-cosine-similarity",
+   "notes": "TensorTonic. a.b becomes a^T S b; write one bilinear(x, S, y) helper and call it three times. Trap: S symmetric with a unit diagonal is not necessarily PSD, so a^T S a can go negative and np.sqrt returns nan - raise or clamp, do not return nan silently. Optional extras scaffolded in the notebook: soft_cosine_cholesky (S = L L^T, then plain cosine on L^T a and L^T b) and soft_cosine_matrix (one query vs every row, no Python loop)."
   },
   {
    "id": null,
