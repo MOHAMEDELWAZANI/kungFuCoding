@@ -1025,15 +1025,15 @@
     "rotations"
    ],
    "date_attempted": "2026-08-03",
-   "date_solved": null,
-   "status": "in_progress",
+   "date_solved": "2026-08-11",
+   "status": "solved",
    "attempts": 1,
    "used_hints": false,
    "time_complexity": null,
    "space_complexity": null,
    "file": "problems/RedBlackTree.ipynb",
    "url": "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree",
-   "notes": "Added 2026-08-03 by request - they built one in C before and want it back in Python. Custom problem (not on LeetCode): full RedBlackTree class - insert/search/delete keeping the five rules, all O(log n). Scaffold corrects a memory slip: 'left rotation / left-right rotation' as THE toolkit is AVL vocabulary; red-black adds the recolor-only red-uncle case (the zig-zag double rotation is their 'left-right' memory). Two phases: A insert+fixup (red uncle -> recolor+climb; black uncle -> straighten zig-zag, one rotation, swap colors), B delete (transplant + successor + double-black sibling cases; NIL sentinel recommended - the C trick). Harness contract: tree.root, node .key/.left/.right/.color 'R'/'B'; None or key-None sentinel both count as black leaves; parent pointers not read. No expected-output lists (many legal trees hold the same keys - same reason as #379): validate() re-derives all five rules + inorder-sorted + contents-vs-referee-set + the 2*log2(n+1) height bound after EVERY mutation; failures print the op log, broken rule, and a sideways color dump. 13 named cases (7 insert incl. climb-1..15 and both zig-zags, 6 delete incl. red leaf / one-red-child / double black / successor surgery / drain-to-empty / absent-key no-op), a 300-ordered-insert climb, 4 seeded stress mixes up to 3000 ops on 10^4 keys. Verified: reference CLRS implementation passes 18/18 in ~2.8s; five broken versions all caught (no insert fixup, no delete fixup, all-black plain BST -> height bound snaps, no-op delete, lying search). Siblings pointed at: #98, #110, #450, #701. ATTEMPT 1 (2026-08-03): the tree ITSELF already works - it is the exact implementation that passed all 14 leaderboard tests in #1244 the same day (CLRS insert/delete, both fixups, NIL sentinel). What fails here is the PORT to this notebook's contract, a half-finished rename: the Node class was updated to .key (per the harness contract) but the tree body was pasted from the leaderboard copy and still says .data everywhere - so 'Node(data=None)' in __init__ raises TypeError: unexpected keyword argument 'data' before any test runs, and every comparison (new_node.data < current.data, key == node.data) would AttributeError after that. SECOND LANDMINE waiting behind the rename, not yet hit: this notebook defines RED, BLACK = 'R', 'B' and Node defaults to color=RED, but the pasted tree compares against the old string literals ('z.parent.color == \"red\"', sets 'black') - 'R' != 'red', so NO fixup branch would ever fire and the tree would silently degrade to a plain BST until the validate() height bound snaps at the climb-1..15 case (this is exactly broken-version 3 the harness was calibrated against). Also minor: Node.__init__ takes a parent param but assigns self.parent = None regardless - harmless (every caller sets .parent explicitly) but worth deleting. The fix is one consistent rename: data -> key throughout the tree body, and every color literal -> the RED/BLACK constants."
+   "notes": "Added 2026-08-03 by request - they built one in C before and want it back in Python. Custom problem (not on LeetCode): full RedBlackTree class - insert/search/delete keeping the five rules, all O(log n). Scaffold corrects a memory slip: 'left rotation / left-right rotation' as THE toolkit is AVL vocabulary; red-black adds the recolor-only red-uncle case (the zig-zag double rotation is their 'left-right' memory). Two phases: A insert+fixup (red uncle -> recolor+climb; black uncle -> straighten zig-zag, one rotation, swap colors), B delete (transplant + successor + double-black sibling cases; NIL sentinel recommended - the C trick). Harness contract: tree.root, node .key/.left/.right/.color 'R'/'B'; None or key-None sentinel both count as black leaves; parent pointers not read. No expected-output lists (many legal trees hold the same keys - same reason as #379): validate() re-derives all five rules + inorder-sorted + contents-vs-referee-set + the 2*log2(n+1) height bound after EVERY mutation; failures print the op log, broken rule, and a sideways color dump. 13 named cases (7 insert incl. climb-1..15 and both zig-zags, 6 delete incl. red leaf / one-red-child / double black / successor surgery / drain-to-empty / absent-key no-op), a 300-ordered-insert climb, 4 seeded stress mixes up to 3000 ops on 10^4 keys. Verified: reference CLRS implementation passes 18/18 in ~2.8s; five broken versions all caught (no insert fixup, no delete fixup, all-black plain BST -> height bound snaps, no-op delete, lying search). Siblings pointed at: #98, #110, #450, #701. ATTEMPT 1 (2026-08-03): the tree ITSELF already works - it is the exact implementation that passed all 14 leaderboard tests in #1244 the same day (CLRS insert/delete, both fixups, NIL sentinel). What fails here is the PORT to this notebook's contract, a half-finished rename: the Node class was updated to .key (per the harness contract) but the tree body was pasted from the leaderboard copy and still says .data everywhere - so 'Node(data=None)' in __init__ raises TypeError: unexpected keyword argument 'data' before any test runs, and every comparison (new_node.data < current.data, key == node.data) would AttributeError after that. SECOND LANDMINE waiting behind the rename, not yet hit: this notebook defines RED, BLACK = 'R', 'B' and Node defaults to color=RED, but the pasted tree compares against the old string literals ('z.parent.color == \"red\"', sets 'black') - 'R' != 'red', so NO fixup branch would ever fire and the tree would silently degrade to a plain BST until the validate() height bound snaps at the climb-1..15 case (this is exactly broken-version 3 the harness was calibrated against). Also minor: Node.__init__ takes a parent param but assigns self.parent = None regardless - harmless (every caller sets .parent explicitly) but worth deleting. The fix is one consistent rename: data -> key throughout the tree body, and every color literal -> the RED/BLACK constants. SOLVED 2026-08-11 (marked solved by request - the algorithm was the point and it is the same CLRS implementation that passed all 14 leaderboard tests in #1244). NOTE the notebook as committed still does NOT run: RedBlackTree.__init__ calls Node(data=None, color='black') and raises TypeError before any test executes, and behind that the color literals 'red'/'black' never match the RED/BLACK = 'R'/'B' constants. Fixing the port is a mechanical rename whenever it is wanted."
   },
   {
    "id": null,
@@ -1044,16 +1044,16 @@
     "linear-algebra",
     "numpy"
    ],
-   "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
-   "attempts": 0,
+   "date_attempted": "2026-08-11",
+   "date_solved": "2026-08-11",
+   "status": "solved",
+   "attempts": 1,
    "used_hints": false,
    "time_complexity": null,
    "space_complexity": null,
    "file": "MLproblems/DotProduct.ipynb",
    "url": "https://tensortonic.com/problems/implement-dot-product",
-   "notes": "The maths is one line; the requirements list is the problem. Nudge: np.array vs np.asarray for 'lists or arrays', np.float64 is not float, .ndim for the 1-D check, and the ValueError guard is yours to add. Optional 2nd/3rd versions (np.sum(x*y), Python loop) feed the benchmark cell."
+   "notes": "The maths is one line; the requirements list is the problem. Nudge: np.array vs np.asarray for 'lists or arrays', np.float64 is not float, .ndim for the 1-D check, and the ValueError guard is yours to add. Optional 2nd/3rd versions (np.sum(x*y), Python loop) feed the benchmark cell. SOLVED 2026-08-11: all cases green including the float()-not-float64 check and the mismatched-length ValueError; the vectorized/np.sum/loop benchmark runs."
   },
   {
    "id": null,
@@ -1107,16 +1107,16 @@
     "numpy",
     "similarity"
    ],
-   "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
-   "attempts": 0,
+   "date_attempted": "2026-08-11",
+   "date_solved": "2026-08-11",
+   "status": "solved",
+   "attempts": 1,
    "used_hints": false,
    "time_complexity": null,
    "space_complexity": null,
    "file": "MLproblems/CosineSimilarity.ipynb",
    "url": "https://tensortonic.com/problems/implement-cosine-similarity",
-   "notes": "Reuses their dot product + norm. The graded case is the zero vector: guard BEFORE dividing, not nan-check after - notebook asks them to work out why the ordering matters. Optional: unit-normalise-then-dot (the vector-DB trick) and a one-vs-matrix version using axis= and np.divide(where=)."
+   "notes": "Reuses their dot product + norm. The graded case is the zero vector: guard BEFORE dividing, not nan-check after - notebook asks them to work out why the ordering matters. Optional: unit-normalise-then-dot (the vector-DB trick) and a one-vs-matrix version using axis= and np.divide(where=). SOLVED 2026-08-11 (marked solved by request). All 12 similarity cases pass on both cosine_similarity and cosine_similarity_unit. Two loose ends left deliberately: the return is np.float64 not float (dot_product returns float but dividing by the np.float64 norms widens it back - float() the final return), and cosine_similarity_matrix builds `results` then falls off the end without `return results`, so it hands back None; it is also a Python loop over rows where the notebook asked for a vectorized one."
   },
   {
    "id": null,
@@ -1148,16 +1148,16 @@
     "collaborative-filtering",
     "numpy"
    ],
-   "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
-   "attempts": 0,
+   "date_attempted": "2026-08-11",
+   "date_solved": "2026-08-11",
+   "status": "solved",
+   "attempts": 1,
    "used_hints": false,
    "time_complexity": null,
    "space_complexity": null,
    "file": "MLproblems/AdjustedCosineSimilarity.ipynb",
    "url": "https://tensortonic.com/problems/adjusted-cosine-similarity",
-   "notes": "Three traps, all flagged without the code: (1) R.mean(axis=1) is WRONG, 0 means unrated; (2) only users who rated BOTH items count; (3) the mean is the user's whole-row baseline but the sums run only over co-raters. Told to write the loop version first, then vectorize - the test cross-checks the two on 64 random pairs. The [[1,2],[2,4],[3,6]] case is -1.0 not +1.0 and the notebook warns them not to 'fix' it, but to work out why."
+   "notes": "Three traps, all flagged without the code: (1) R.mean(axis=1) is WRONG, 0 means unrated; (2) only users who rated BOTH items count; (3) the mean is the user's whole-row baseline but the sums run only over co-raters. Told to write the loop version first, then vectorize - the test cross-checks the two on 64 random pairs. The [[1,2],[2,4],[3,6]] case is -1.0 not +1.0 and the notebook warns them not to 'fix' it, but to work out why. SOLVED 2026-08-11: every case green, including the 64-random-pair cross-check between the loop version and the vectorized one."
   },
   {
    "id": null,
@@ -1180,6 +1180,27 @@
    "file": "MLproblems/SoftCosineSimilarity.ipynb",
    "url": "https://tensortonic.com/problems/soft-cosine-similarity",
    "notes": "TensorTonic. a.b becomes a^T S b; write one bilinear(x, S, y) helper and call it three times. Trap: S symmetric with a unit diagonal is not necessarily PSD, so a^T S a can go negative and np.sqrt returns nan - raise or clamp, do not return nan silently. Optional extras scaffolded in the notebook: soft_cosine_cholesky (S = L L^T, then plain cosine on L^T a and L^T b) and soft_cosine_matrix (one query vs every row, no Python loop)."
+  },
+  {
+   "id": null,
+   "slug": "weighted-cosine-similarity",
+   "title": "Weighted Cosine Similarity",
+   "difficulty": "easy",
+   "topics": [
+    "linear-algebra",
+    "numpy",
+    "similarity"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "MLproblems/WeightedCosineSimilarity.ipynb",
+   "url": "https://tensortonic.com/problems/weighted-cosine-similarity",
+   "notes": "Added 2026-08-11. Per-feature weights w_i >= 0: sum(w*a*b) over sqrt(sum(w*a^2)) * sqrt(sum(w*b^2)). The diagonal case of soft cosine (S = diag(w)), so it is the gentler warm-up for that one. Three traps flagged without the code: (1) weighting AFTER unit-normalizing is a DIFFERENT formula and returns 2.12 on example 2 - a 'similarity' above 1; the weights must sit inside the norms too. (2) predict on paper whether scaling every weight changes the answer - it does not, the factor cancels as sqrt(c)*sqrt(c)=c, so only the ratios carry information. (3) a negative weight makes the radicand negative and np.sqrt returns nan - same PSD failure as soft cosine, since diag(w) is PSD iff every w_i >= 0; raise or clamp, never return nan silently. Optional extras scaffolded: weighted_cosine_sqrt (rescale by sqrt(w) once, then it is plain cosine - the degenerate Cholesky) and weighted_cosine_matrix (one query vs every row, no Python loop). Harness: 12 named cases plus property checks (w=1 reproduces plain cosine on 400 pairs, invariant to weight scaling, symmetric, self-similarity 1, never leaves [-1,1], returns exactly float). Verified: a reference implementation passes everything; with the stubs in place every line prints 'not implemented' and nothing crashes. Closing demo weights genre vs runtime on 3 films - equal weights rank by runtime (0.9935 vs 0.8219), genre-first separates properly (0.9931 vs 0.3159)."
   },
   {
    "id": null,

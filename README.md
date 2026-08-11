@@ -76,7 +76,7 @@ a relative path that goes up one level first, e.g.
 | 1244 | [Design A Leaderboard](problems/DesignALeaderboard.ipynb) | Medium | ✅ solved   |
 | 146 | [LRU Cache](problems/LRUCache.ipynb) | Medium | todo        |
 | 295 | [Find Median from Data Stream](problems/FindMedianFromDataStream.ipynb) | Hard | todo        |
-| — | [Red-Black Tree](problems/RedBlackTree.ipynb) | Hard | ✅ solved       |
+| — | [Red-Black Tree](problems/RedBlackTree.ipynb) | Hard | ✅ solved   |
 
 ### Database (SQL)
 
@@ -109,14 +109,21 @@ method in, then `OK` or the value it wanted.
 
 | Problem | Difficulty | Topic | The trap | Status |
 |---|---|---|---|---|
-| [Implement Dot Product](MLproblems/DotProduct.ipynb) | Easy | Linear Algebra | `np.float64` is not `float`; the `ValueError` guard is yours | todo |
+| [Implement Dot Product](MLproblems/DotProduct.ipynb) | Easy | Linear Algebra | `np.float64` is not `float`; the `ValueError` guard is yours | ✅ solved |
 | [Implement Euclidean Distance](MLproblems/EuclideanDistance.ipynb) | Easy | Linear Algebra | predict what `1e200` returns before you run it | todo |
 | [Implement Manhattan Distance](MLproblems/ManhattanDistance.ipynb) | Easy | Linear Algebra | when are L1 and L2 equal? answer before the table prints | todo |
-| [Implement Cosine Similarity](MLproblems/CosineSimilarity.ipynb) | Easy | Linear Algebra | zero vector → `0.0`; guard *before* dividing, not after | todo |
+| [Implement Cosine Similarity](MLproblems/CosineSimilarity.ipynb) | Easy | Linear Algebra | zero vector → `0.0`; guard *before* dividing, not after | ✅ solved |
+| [Weighted Cosine Similarity](MLproblems/WeightedCosineSimilarity.ipynb) | Easy | Linear Algebra | weighting *after* you normalise is a different formula — and it can return > 1 | todo |
 | [Jaccard Similarity](MLproblems/JaccardSimilarity.ipynb) | Easy | Recommender Systems | empty/empty raises — same bug shape as the zero vector | todo |
-| [Adjusted Cosine Similarity](MLproblems/AdjustedCosineSimilarity.ipynb) | Medium | Recommender Systems | `R.mean(axis=1)` is wrong; `0` means *unrated* | todo |
+| [Adjusted Cosine Similarity](MLproblems/AdjustedCosineSimilarity.ipynb) | Medium | Recommender Systems | `R.mean(axis=1)` is wrong; `0` means *unrated* | ✅ solved |
 | [Soft Cosine Similarity](MLproblems/SoftCosineSimilarity.ipynb) | Medium | NLP | `S` symmetric with a unit diagonal is **not** enough — if it isn't PSD, `sqrt` returns `nan` | todo |
 | [MNIST Handwritten Digits](MLproblems/MnistDigits.ipynb) | Medium | Classification | four models, backprop by hand | todo |
+
+**Weighted cosine** is the diagonal case of soft cosine — `S = diag(w)` — so do
+it first if soft cosine bites. Every sum picks up a `w_i`, including the two
+inside the square roots; move the weights outside them and you get a
+"similarity" that can exceed 1. It also asks you to predict, on paper, whether
+scaling every weight changes the answer.
 
 **Soft cosine** is the first one that isn't a one-liner. `a · b` becomes
 `aᵀ S b`, so write `bilinear(x, S, y)` once and call it three times. Two optional
