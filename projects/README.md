@@ -7,6 +7,7 @@ that runs end to end, not an exercise with an expected answer.
 |---|---|---|---|
 | 1 | Org Chart Manager (Flask + SQLite web app) | [PROJECT_1_GUIDE.md](PROJECT_1_GUIDE.md) | not started |
 | 2 | [Plant Disease Cascade](../../ClassificationDesPlantes/plantdisease/) (PyTorch, CNN, 25 leaf classes) | [PROJECT_2_GUIDE.md](../../ClassificationDesPlantes/PROJECT_2_GUIDE.md) | not started |
+| 3 | [Geometric Metrics Lab](geometric_metrics/) (NumPy/scipy/sklearn, 10 problems) | [README.md](geometric_metrics/README.md) | scaffolded, 14 stubs open |
 
 **Project 1 starts after** TP1 (`../tp/TP_OrgChart.ipynb`) and #102 / #103.
 It reuses the same `../data/company.json` as seed data.
@@ -17,8 +18,16 @@ of the June 2025 Keras project, in PyTorch, with the 2025 results kept in
 images are in `../../ClassificationDesPlantes/plantes/` - 9 MB sample committed, the 542 MB full split
 gitignored.
 
-Each project gets its own folder here (`orgchart/`, `../../ClassificationDesPlantes/plantdisease/`, ...), with
-its data in `../data/`.
+**Project 3 is already open** - `geometric_metrics/geometric_metrics.ipynb`,
+added 2026-08-13. It is the one project that needs no new stack: it takes the
+cosine / Euclidean / weighted / soft-cosine formulas from `../MLproblems/` and
+runs them on 2221 real documents, scoring `precision@10`. Ten problems in the
+same format as `../MLproblems/`, 14 `raise NotImplementedError` left to fill,
+nothing executed yet. Read its README first - the expected numbers per problem
+are in there, and so is the gensim warning for problem 6b.
+
+Each project gets its own folder here (`orgchart/`, `geometric_metrics/`,
+`../../ClassificationDesPlantes/plantdisease/`, ...), with its data in `../data/`.
 
 ## Ideas for later
 

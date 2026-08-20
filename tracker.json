@@ -1,18 +1,19 @@
 {
  "owner": "medwa",
  "started_on": "2026-07-20",
- "last_updated": "2026-08-11",
+ "last_updated": "2026-08-15",
  "stats": {
-  "total_attempted": 16,
-  "total_solved": 13,
+  "total": 58,
+  "total_attempted": 25,
+  "total_solved": 20,
   "by_difficulty": {
    "easy": {
-    "attempted": 7,
-    "solved": 5
+    "attempted": 11,
+    "solved": 9
    },
    "medium": {
-    "attempted": 8,
-    "solved": 8
+    "attempted": 13,
+    "solved": 11
    },
    "hard": {
     "attempted": 1,
@@ -142,7 +143,7 @@
    "space_complexity": "O(w)",
    "file": "problems/ZigzagLevelOrder.ipynb",
    "url": "https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/",
-   "notes": "Solved. Traversal stays left-then-right; only the collected batch flips. Chose Way B (front-insert). First did list.insert(0,x) = O(k^2) per odd level; then built their own singly-linked list with head+tail so addFirst is O(1), fixing it to O(k). Explored a length-based getList cache (correct but pointless here - one call per list; len==size is a leaky dirty-check that a future remove would fool)."
+   "notes": "Solved. Traversal stays left-then-right; only the collected batch flips. Chose Way B (front-insert). First did list.insert(0,x) = O(k^2) per odd level; then built their own singly-linked list with head+tail so addFirst is O(1), fixing it to O(k). Explored a length-based getList cache (correct but pointless here - one call per list; len==size is a leaky dirty-check that a future remove would fool). | [2026-08-15 audit] STRAY IMPORT: the first code cell starts with `from zope.interface.common import optional` (an IDE auto-import). zope is not installed, so the notebook fails on cell 1 on any clean machine. Delete that line - the solution itself is fine."
   },
   {
    "id": 242,
@@ -251,7 +252,7 @@
    "space_complexity": "O(n^2) worst case (slices)",
    "file": "problems/ConstructTreePreorderInorder.ipynb",
    "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
-   "notes": "SOLVED route A same day, own algorithm designed on paper BEFORE coding: preorder[0] = root, split inorder at .index(root) into I1/I2, carry the size over to split preorder into P1/P2, recurse. Hint was one correction to their draft: they wrote root.left = P1[0] (a value, stops at depth 1) instead of root.left = buildTree(P1, I1) - the #226 leap of faith - plus the missing empty-list base case (P2[0] on a leaf = IndexError). Slice arithmetic (P[1:k+1] / P[k+1:]) they got right unaided. All 6 shape tests + 3000-node left chain pass. Bonus own work: wrote TreePreorder/TreeInorder methods, generated both traversals from a hand-built 15-node perfect tree, rebuilt it and round-tripped inorder back - the inverse-functions proof, self-invented. STILL OPEN: route B (hash map {value: index} built once + boundary indices, no slices, O(n)) and the After-it-passes questions (#106/#889 ambiguity one). Notebook has a stray scratch cell at the end reusing loop-leaked test variables, and an unused 'import pandas as pa' in the TreeNode cell."
+   "notes": "SOLVED route A same day, own algorithm designed on paper BEFORE coding: preorder[0] = root, split inorder at .index(root) into I1/I2, carry the size over to split preorder into P1/P2, recurse. Hint was one correction to their draft: they wrote root.left = P1[0] (a value, stops at depth 1) instead of root.left = buildTree(P1, I1) - the #226 leap of faith - plus the missing empty-list base case (P2[0] on a leaf = IndexError). Slice arithmetic (P[1:k+1] / P[k+1:]) they got right unaided. All 6 shape tests + 3000-node left chain pass. Bonus own work: wrote TreePreorder/TreeInorder methods, generated both traversals from a hand-built 15-node perfect tree, rebuilt it and round-tripped inorder back - the inverse-functions proof, self-invented. STILL OPEN: route B (hash map {value: index} built once + boundary indices, no slices, O(n)) and the After-it-passes questions (#106/#889 ambiguity one). Notebook has a stray scratch cell at the end reusing loop-leaked test variables, and an unused 'import pandas as pa' in the TreeNode cell. | [2026-08-15 audit] `import pandas as pa` but pandas is not in .venv, so the notebook stops on that cell. Either `pip install pandas` or drop the import if it is unused."
   },
   {
    "id": 155,
@@ -286,15 +287,15 @@
     "heap"
    ],
    "date_attempted": "2026-07-25",
-   "date_solved": "2026-07-26",
-   "status": "solved",
+   "date_solved": null,
+   "status": "in_progress",
    "attempts": 7,
    "used_hints": true,
    "time_complexity": "push model: postTweet O(U*F), follow O(F+P log P), unfollow O(n), getNewsFeed O(10)",
    "space_complexity": "O(T * followers) - a Node copy per follower, feeds never trimmed",
    "file": "problems/DesignTwitter.ipynb",
    "url": "https://leetcode.com/problems/design-twitter/",
-   "notes": "ATTEMPT 1 (2026-07-25): invented the PUSH model (fan-out-on-write, materialized per-user feeds) all alone - the architecture real Twitter actually uses. 4/8 tests fail, each traceable to a skipped scaffold question: no global clock (Q2) so follow() prepends followee posts un-interleaved (tests 6/8); no cap at 10 (test 3); unfollow filters the stored feed by 'value in followee posts' so self-unfollow wipes own tweets (Q4 trap, test 4); and the SAME Node object is appended into multiple feeds stacks, rewiring .next and cross-corrupting chains - the exact two-Node lesson from #155. Also: follow stored as linked list not set (Q1), postTweet fan-out scans all users O(U*F). Advice given: push model needs timestamps anyway; with timestamps the pull model (route A) makes the stored feeds unnecessary. ATTEMPTS 2-3: now 6/8. Fixed the self-follow trap (followeeId != followerId guard - legit, constraints promise it) and the getLast10 off-by-one (s<10). Remaining failures are tests 6 and 8, one root cause: NO CLOCK - Node stores only tweetId, so follow() block-prepends the followee's posts and cannot interleave by time (info doesn't exist in the program). Shared-Node fan-out landmine still unexploded (same feeds Node appended into multiple stacks rewires .next). ATTEMPT 4 (2026-07-26): added the clock (self.t ticked in postTweet, Node gains .t) - test 6 now passes, and addingStack was rewritten to merge-by-timestamp instead of block-prepend. Shared-Node fan-out bug also fixed (fresh Node per follower). Also invented a duplicate-follow guard, genuinely needed in the push model (a second follow would re-merge the same posts). ONE crash left: that guard reads self.DB[followerId] before checking the key exists, so test 7's opening follow(2,1) on an empty DB raises KeyError and aborts the run. Verified locally: with the guard reordered, all 8 tests pass. ATTEMPT 5: same KeyError - tried to guard with 'if self.DB[followerId] and ...', but that subscript IS the crash; needed the membership test 'followerId in self.DB'. Teaching point: d[k] raises KeyError, k in d returns False; 'and' short-circuits but cannot save an operand that raises while being evaluated. ATTEMPT 6: local suite went 8/8 but LeetCode rejected it - guard now uses the right operator but the WRONG VARIABLE: 'if followeeId in self.DB and ... self.DB[followerId]...'. Checks the followee's key, subscripts with the follower's. Local test 7 hid it because its follow() is the first op ever (DB empty, so the check short-circuits); LeetCode hit the case where the followee exists and the follower does not. Repro added as a 9th test cell: postTweet(1,5) then follow(2,1) -> KeyError 2. Verified: swapping that one identifier to followerId makes all 9 pass. ACCEPTED on LeetCode 2026-07-26, 21/21, runtime 7ms (beats 91.4%), memory 30.02MB (beats 5.65%) - the memory score IS the push model's signature: every tweet copied into every follower's feed and never trimmed. Final bug was the wrong identifier in the existence guard; they fixed it themselves. NOTE: the saved notebook still carried the pre-fix guard when this was recorded (fix was made in the LeetCode editor) - re-save the notebook so the file matches. V2 cells added by me on request: TwitterPull (route A, pull model, setdefault on write / .get on read so reads never mutate, last-10 slice before sort) and TwitterHeap (route B, k-way merge with heapq, -time for newest-first, never touches a source's 11th tweet). Both verified against all 9 tests."
+   "notes": "[2026-08-15 audit] REGRESSED - was marked solved. The 8-case suite is green, but the EXTRA cell (the gap LeetCode found) raises KeyError: 2 on follow(2,1) when user 1 exists and user 2 does not. The guard checks the followee, not the follower. Original note: solved with a dict of followees + per-user tweet lists."
   },
   {
    "id": 382,
@@ -316,7 +317,7 @@
    "space_complexity": null,
    "file": "problems/LinkedListRandomNode.ipynb",
    "url": "https://leetcode.com/problems/linked-list-random-node/",
-   "notes": "Added 2026-07-26. First RANDOMIZED problem in the repo. Route A: snapshot values into a list in __init__, random index per call - O(n) space, O(1) per call, accepted but ignores the follow-up. Route B: reservoir sampling - keep one candidate, at node i (1-based) replace with probability 1/i; O(1) space, O(n) per call, works on a stream of unknown length. Scaffold walks them through deriving it (hand-proof for n=3, then the telescoping product (1/j) * prod (i-1)/i = 1/n). Test harness is statistical, not exact: 60000 calls, counts must sit within 5 sigma of trials/n, fixed seed for determinism - verified that 4 correct implementations pass across 6 list shapes and 5 seeds, and that always-head / coin-flip-1/2 / shifted-counter biases are all caught by hundreds of sigmas. Also covers question 7: getRandom returns VALUES, so [1,1,2] gives value 1 about 66.7% - still uniform over nodes."
+   "notes": "[2026-08-15 audit] FILE DOES NOT PARSE. `class Solution` has `def __init__(self, head):` and `def getRandom(self):` with empty bodies - IndentationError before any test runs. Put `pass` back, then do reservoir sampling."
   },
   {
    "id": 379,
@@ -352,15 +353,15 @@
     "queue"
    ],
    "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
+   "date_solved": "2026-08-15",
+   "status": "solved",
    "attempts": 0,
    "used_hints": false,
-   "time_complexity": null,
-   "space_complexity": null,
+   "time_complexity": "O(1) all operations",
+   "space_complexity": "O(k)",
    "file": "problems/DesignCircularQueue.ipynb",
    "url": "https://leetcode.com/problems/design-circular-queue/",
-   "notes": "Added 2026-07-26. Fourth design problem, and the sibling #379's notebook points at. Fixed capacity k, seven methods, all O(1), O(k) space allocated once. THE question (scaffold Q2): with only head and tail indices, head == tail means both empty AND full - the information is not there, so you must store one more thing; three valid tie-breakers (a count, one deliberately wasted slot in a k+1 array, or a boolean full flag) and the scaffold makes them pick one and cost the others. Route A: self.q = [0]*k + head + count; enQueue writes at (head+count)%k, Rear reads (head+count-1)%k. Route B (the linked-list tag): a CIRCULAR list of exactly k nodes built once in __init__, front/rear/count pointers, nothing allocated after construction - the punchline being that (i+1)%k and node.next are the same operation, so the modulo WAS the ring all along. Traps covered: 0 is a legal value so any truthiness check ('or -1', 'if self.front:') breaks - has its own test case; -1 as the empty sentinel is only safe because 0 <= value (same reasoning as #379's get()); Python's -1 % 3 == 2 makes the Rear expression work where C would not; and pop(0)/insert(0,) is the repo's recurring O(n)-hidden-in-a-friendly-call family (#103 insert(0,x), #105 .index(), #155 min()). Harness: run(ops,args) replay against fixed expected outputs (deterministic again, unlike #382's statistical harness and #379's referee) over 8 cases - LeetCode example, k=1 fence-posts, all-methods-on-empty, the wrap, the drained-after-full ambiguity, deQueue past empty, value 0, five laps around a 3-slot ring - plus stress() which replays random calls against ModelQueue (an append/pop(0) oracle: slow is fine for an oracle, and it is in the test file precisely because it must not be in the answer) at k=1,2,3,7,1000. Bool methods are also type-checked, which is what catches a missing return. Verified: 4 correct designs (count / ring-of-nodes / wasted-slot / flag) all pass 13 checks; 8 broken versions all caught (no tie-breaker, flag never cleared, Rear off by one, missing modulo, 'or -1' on a stored 0, missing return, 0 instead of -1 when empty, isFull off by one). NOTE stated in the notebook: a pop(0) solution passes every test (3000 calls at k=1000 is too small to time), so the harness cannot enforce O(1) - Q6 is the only guard. Siblings pointed at: #641 Circular Deque (same class + insertFront/deleteLast), #232, #225, #146; plus deque(maxlen=n) as the same structure with the opposite full-buffer policy (drops the oldest instead of refusing)."
+   "notes": "[2026-08-15 audit] SOLVED by V2 - was marked todo. The array + modulo version passes everything, including the k=1000 / 3000-call stress. CELL ORDER PROBLEM: V1 (the linked-list attempt) sits ABOVE the test cell, so running the notebook top to bottom tests V1, prints two FAILs (Front/Rear return the wrong end) and then crashes with AttributeError. Move V2 above the tests or delete V1."
   },
   {
    "id": 707,
@@ -372,15 +373,15 @@
     "design"
    ],
    "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
+   "date_solved": "2026-08-15",
+   "status": "solved",
    "attempts": 0,
    "used_hints": false,
-   "time_complexity": null,
-   "space_complexity": null,
+   "time_complexity": "O(index) get/addAtIndex/deleteAtIndex, O(1) addAtHead/addAtTail",
+   "space_complexity": "O(n)",
    "file": "problems/DesignLinkedList.ipynb",
    "url": "https://leetcode.com/problems/design-linked-list/",
-   "notes": "Added 2026-07-26. The capstone of the linked-list track - they have already built pieces of this class in #104 (queue with first/last), #103 (addFirst in O(1)), #155 (stack), #622 (ring of nodes); 707 is all of it with an INDEX api. No new algorithm; the difficulty is the contract. Q1 makes them tabulate the three index rules, which differ per method: get valid 0..size-1 else -1; addAtIndex valid 0..size (index == size means append, index > size is a NO-OP not a clamp); deleteAtIndex valid 0..size-1 else no-op. Q2-Q3 derive the SENTINEL: to insert before i you need the node at i-1, which does not exist for i == 0, so either addAtHead/addAtIndex(0) become special cases or you add one dummy node at the front and 'the node before index 0' becomes the dummy itself - then insert-at-0 and insert-at-size run the same code with no if. Q4 size field vs walking to count; Q5 is the doubly-linked argument in one trace (singly + tail pointer, then deleteAtIndex(size-1): tail must move back one and you cannot get there in O(1)); Q6 two sentinels means ZERO None checks in the splice; Q7 the cost table vs Python list plus why the stdlib ships no linked list and what deque adds; Q8 sets up the harness. Route A: singly + one sentinel + size, addAtHead = addAtIndex(0), addAtTail = addAtIndex(size), splicing written once - accepted. Route B: doubly with a sentinel at BOTH ends, wired head.next=tail/tail.prev=head at construction, so insert is always the same four assignments and delete two, addAtTail O(1), get O(min(i, n-i)) walking from the nearer end. Sentinels framed as the repo's recurring move: pay once in state to stop paying in special cases (#155 per-node min, #355 clock, #622 count). HARNESS is the interesting part: four of five methods return None, so corruption is invisible at the call that causes it - check() therefore replays against a Python list model and after EVERY call reads the whole list back via get(0..size-1) plus get(size) which must be -1 (that probe is what catches a size out of step with the nodes), and every exception is caught and reported as a FAIL line with the offending call. 11 fixed cases (LeetCode example, all methods on empty, addAtIndex at size vs past size, addAtIndex(0) on a non-empty list, delete head/tail/middle, delete-last-then-addAtTail, delete-only-element, ten addAtHead, drain from front, drain from back, value 0) + seeded random stress at 50/200/500/2000 calls. Verified: 4 correct designs pass 15/15 (singly+sentinel, doubly+2 sentinels, singly+maintained tail, and a Python-list wrapper - which passes, stated out loud in the notebook: the nodes are the assignment); 9 broken versions all caught AT the causing call (get without upper bound -> AttributeError, addAtIndex refusing index == size, clamping index > size instead of ignoring, delete without size--, insert AFTER index, stale tail after deleting last, get without return, deleteAtIndex(0) ignored, and no-sentinel insert-at-0 landing at index 1 - that last one is only caught by the named addAtIndex(0) case, which is why it was added). Siblings pointed at: #146 LRU Cache (route B + a dict IS an LRU cache - the reason to do 707 properly), #1472 Browser History, #641, #206 (add reverse() to your own class and keep size/tail consistent)."
+   "notes": "[2026-08-15 audit] SOLVED - was still marked todo. Singly linked list with head+tail pointers and a length counter. Ran the notebook's suite: 15/15 OK, including the four stress rounds (up to 2000 random calls) and the stale-tail-pointer case."
   },
   {
    "id": null,
@@ -431,7 +432,7 @@
    "file": "tp/TP_OrgChart.ipynb",
    "data_file": "data/company.json",
    "url": null,
-   "notes": "Practical exercise (not LeetCode). 7 exercises over a company tree stored as JSON: count/depth/payroll (recursion, stack, queue), find-by-name (tree search vs dict index), team cost, chain of command (parent-pointer dict), JSON -> Employee objects. PAUSED on 2026-07-23 to do the learn_json track first. Added 'id' to every employee in company.json (1-12) and a 12th employee, Mohamed. Wrote a recursive printPersons (own work, no skeleton) + a Person/Node/LinkedList/Tree structure = a tree of linked lists, one list per manager keyed by reportOwner. Bug found and fixed in a separate TreeFixed cell: the root list was given reportOwner=1, colliding with Amine's own person_reports list; BFS hit the root first so all of Amine's reports were appended as his SIBLINGS. One-token fix (1 -> 0). Lesson: reportOwner is a KEY and must be unique; a collision does not crash, it silently returns the wrong thing. Still open: getListByOwnerId is an O(n) BFS on every append -> O(n^2) build; index it. The markdown answers for Ex1/Ex3/Ex5 are STALE since Mohamed was added (Ex1 should be 12, Ex3 743000) and the intro ASCII chart omits Mohamed."
+   "notes": "Practical exercise (not LeetCode). 7 exercises over a company tree stored as JSON: count/depth/payroll (recursion, stack, queue), find-by-name (tree search vs dict index), team cost, chain of command (parent-pointer dict), JSON -> Employee objects. PAUSED on 2026-07-23 to do the learn_json track first. Added 'id' to every employee in company.json (1-12) and a 12th employee, Mohamed. Wrote a recursive printPersons (own work, no skeleton) + a Person/Node/LinkedList/Tree structure = a tree of linked lists, one list per manager keyed by reportOwner. Bug found and fixed in a separate TreeFixed cell: the root list was given reportOwner=1, colliding with Amine's own person_reports list; BFS hit the root first so all of Amine's reports were appended as his SIBLINGS. One-token fix (1 -> 0). Lesson: reportOwner is a KEY and must be unique; a collision does not crash, it silently returns the wrong thing. Still open: getListByOwnerId is an O(n) BFS on every append -> O(n^2) build; index it. The markdown answers for Ex1/Ex3/Ex5 are STALE since Mohamed was added (Ex1 should be 12, Ex3 743000) and the intro ASCII chart omits Mohamed. | [2026-08-15 audit] CELLS OUT OF ORDER: the class cell ends by printing `tree.linkedList`, but `tree` is only created in the cell below it, and that cell calls `TreeFixed()` which is defined nowhere in the notebook. Nothing runs top to bottom. Exercises 3-9 are still `pass`."
   },
   {
    "id": null,
@@ -446,8 +447,8 @@
     "io"
    ],
    "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
+   "date_solved": "2026-08-15",
+   "status": "solved",
    "attempts": 0,
    "used_hints": false,
    "time_complexity": null,
@@ -455,7 +456,7 @@
    "file": "learn_json/01_JsonBasics.ipynb",
    "data_file": "data/student.json",
    "url": null,
-   "notes": "JSON<->Python type table (null->None, true->True). The 4-function grid: s = string, no s = file. 6 exercises: load, read fields, prove the types, edit in memory, dumps with indent/sort_keys, dump to file + round-trip equality. Expected: type dict, courses[1]='Algorithms', 3 courses, city='Casablanca', data == data2 True."
+   "notes": "[2026-08-15 audit] DONE - was marked todo. All exercises answered: load/dump round trip, a custom json.JSONEncoder subclass that serialises objects via __dict__, and both a Student tree and a Student list written out to ../data/."
   },
   {
    "id": null,
@@ -471,8 +472,8 @@
     "sorting"
    ],
    "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
+   "date_solved": "2026-08-15",
+   "status": "solved",
    "attempts": 0,
    "used_hints": false,
    "time_complexity": null,
@@ -480,7 +481,7 @@
    "file": "learn_json/02_JsonLists.ipynb",
    "data_file": "data/products.json",
    "url": null,
-   "notes": "8 products. Verified answers: count 8, total stock value 218700, most expensive Laptop 12000, Accessories ['Mouse','Keyboard','Charger','Headset'], stock>20 ['Mouse','Keyboard','Charger'], grouped {Computers:2, Accessories:4, Phones:2}, top3 ['Laptop','Phone','Tablet'], index by id -> id 5 = Phone, by_name['Monitor']['price'] = 2200. Ex4 (group by category with setdefault/defaultdict) and Ex6 (index once) are the two that matter - Two Sum again."
+   "notes": "[2026-08-15 audit] DONE - was marked todo. Answered three ways each: a plain loop, a sum() generator, and a dataclass + Encoder/Decoder/Repository layer. Total inventory value and max-by-price both done."
   },
   {
    "id": null,
@@ -572,11 +573,11 @@
    "used_hints": false,
    "time_complexity": null,
    "space_complexity": null,
-   "file": "projects/plantdisease/README.md",
+   "file": "../ClassificationDesPlantes/plantdisease/README.md",
    "guide": "projects/PROJECT_2_GUIDE.md",
    "data_file": "data/plantes/",
    "url": null,
-   "notes": "Added 2026-07-26. From-scratch rebuild of the June 2025 Keras project (~/Desktop/Projects/P1/Mohamed_Wazane_Mohamed_Elmahadi_Sidi/Machine Learning) in PyTorch on CPU (py3.14, torch 2.13 CPU wheels, 8 cores, no GPU). Data moved into data/plantes/: split/ = the full 542 MB / 31397 images / 25 leaf classes / 5 plants / 256x256 JPEG, 80-10-10 per class (25108/3132/3157), GITIGNORED; sample/ = 500 images (12/4/4 per class, first N sorted, deterministic) COMMITTED so every script runs without the big set, with sample_manifest.json listing every file; classes_2025/ = the 6 Keras class_indices JSONs. 2025 baseline kept read-only in projects/plantdisease/baseline_2025/ (6 classification reports + confusion matrices, training curves before/after their overfitting fix, rapport_erreurs.txt with all 334 cascade errors). Baseline to beat, verified on the SAME test split (support columns match exactly, so comparisons are apples-to-apples): modele1 plant 96% (3157), tomate 92% (1825), mais 88% (388), pommier 94% (319), pomme_de_terre 96% (216), vigne 96% (409), cascade end-to-end 89.42% (334 errors). Floors worth quoting: chance 4%, always-tomate/tylcv 17%. CENTRAL QUESTION for the rebuild: does the 2-stage cascade beat a single flat 25-class model? Never tested in 2025. The cascade's ceiling IS stage 1: P(both) = P(plant) x P(disease|plant), 0.96 x 0.93 ~ 0.89 = exactly the measured 89.42%. Four things found reading the old code, all in the guide as exercises: (1) five near-identical per-plant training scripts instead of one function; (2) epochs=2 and rescale-only, while rapport/chapters/tests.tex claims dropout 0.3-0.5 / augmentation / early stopping / L1-L2 and contains placeholder tables from a different (game) project - hence the rule 'every number in the writeup comes from a script in reports/'; (3) evaluation_modele_final.py loads the TRUE plant's disease model and marks stage-1 misses as plante/unknown - legitimate (when stage 1 is right, true model == predicted model) but worth proving; (4) mais_modele.h5 is 1.1 GB vs 33 MB siblings -> ~287M float32 slots, Adam keeps 2 extra per weight, so the Flatten->Dense head is the suspect; the guide requires AdaptiveAvgPool2d instead. Data flaws found and verified by me: class imbalance 35:1 (tomate/tylcv 5357 vs pomme_de_terre/saine 152) and tomato = 18160/31397 of everything; exactly 4 cross-split duplicate images (same md5, different UUID prefix, same id after '___' - md5 and suffix checks agree), so step 1's leakage check has a real finding but only ~0.1% numeric impact. Guide = projects/PROJECT_2_GUIDE.md, 7 steps: 0 skeleton+seeds, 1 explore/stats/duplicates, 2 own Dataset + label maps, 3 flat 25-class baseline with hand-written training loop + overfit-one-batch gate, 4 cascade from one loop over 6 configs + propagation arithmetic, 5 evaluation (macro vs weighted F1, 25x25 confusion, error list, stage-1-vs-stage-2 error split), 6 predict.py with a confidence threshold then the app (load models once, not per click - the 2025 app reloaded 2 models per prediction), 7 REPORT.md. Stretch: resnet18 transfer learning (likely the real jump past 89.42%), imbalance handling, augmentation ablation, Grad-CAM, model size, pytest on the data."
+   "notes": "Added 2026-07-26. From-scratch rebuild of the June 2025 Keras project (~/Desktop/Projects/P1/Mohamed_Wazane_Mohamed_Elmahadi_Sidi/Machine Learning) in PyTorch on CPU (py3.14, torch 2.13 CPU wheels, 8 cores, no GPU). Data moved into data/plantes/: split/ = the full 542 MB / 31397 images / 25 leaf classes / 5 plants / 256x256 JPEG, 80-10-10 per class (25108/3132/3157), GITIGNORED; sample/ = 500 images (12/4/4 per class, first N sorted, deterministic) COMMITTED so every script runs without the big set, with sample_manifest.json listing every file; classes_2025/ = the 6 Keras class_indices JSONs. 2025 baseline kept read-only in projects/plantdisease/baseline_2025/ (6 classification reports + confusion matrices, training curves before/after their overfitting fix, rapport_erreurs.txt with all 334 cascade errors). Baseline to beat, verified on the SAME test split (support columns match exactly, so comparisons are apples-to-apples): modele1 plant 96% (3157), tomate 92% (1825), mais 88% (388), pommier 94% (319), pomme_de_terre 96% (216), vigne 96% (409), cascade end-to-end 89.42% (334 errors). Floors worth quoting: chance 4%, always-tomate/tylcv 17%. CENTRAL QUESTION for the rebuild: does the 2-stage cascade beat a single flat 25-class model? Never tested in 2025. The cascade's ceiling IS stage 1: P(both) = P(plant) x P(disease|plant), 0.96 x 0.93 ~ 0.89 = exactly the measured 89.42%. Four things found reading the old code, all in the guide as exercises: (1) five near-identical per-plant training scripts instead of one function; (2) epochs=2 and rescale-only, while rapport/chapters/tests.tex claims dropout 0.3-0.5 / augmentation / early stopping / L1-L2 and contains placeholder tables from a different (game) project - hence the rule 'every number in the writeup comes from a script in reports/'; (3) evaluation_modele_final.py loads the TRUE plant's disease model and marks stage-1 misses as plante/unknown - legitimate (when stage 1 is right, true model == predicted model) but worth proving; (4) mais_modele.h5 is 1.1 GB vs 33 MB siblings -> ~287M float32 slots, Adam keeps 2 extra per weight, so the Flatten->Dense head is the suspect; the guide requires AdaptiveAvgPool2d instead. Data flaws found and verified by me: class imbalance 35:1 (tomate/tylcv 5357 vs pomme_de_terre/saine 152) and tomato = 18160/31397 of everything; exactly 4 cross-split duplicate images (same md5, different UUID prefix, same id after '___' - md5 and suffix checks agree), so step 1's leakage check has a real finding but only ~0.1% numeric impact. Guide = projects/PROJECT_2_GUIDE.md, 7 steps: 0 skeleton+seeds, 1 explore/stats/duplicates, 2 own Dataset + label maps, 3 flat 25-class baseline with hand-written training loop + overfit-one-batch gate, 4 cascade from one loop over 6 configs + propagation arithmetic, 5 evaluation (macro vs weighted F1, 25x25 confusion, error list, stage-1-vs-stage-2 error split), 6 predict.py with a confidence threshold then the app (load models once, not per click - the 2025 app reloaded 2 models per prediction), 7 REPORT.md. Stretch: resnet18 transfer learning (likely the real jump past 89.42%), imbalance handling, augmentation ablation, Grad-CAM, model size, pytest on the data. | [2026-08-15 audit] Path corrected: the project lives in the sibling repo ../ClassificationDesPlantes/, not in projects/. Only PROJECT_2_GUIDE.md and baseline_2025/ (the 2025 confusion matrices and curves) exist so far - no code written."
   },
   {
    "id": 148,
@@ -591,15 +592,15 @@
     "merge-sort"
    ],
    "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
+   "date_solved": "2026-08-15",
+   "status": "review",
    "attempts": 0,
    "used_hints": false,
-   "time_complexity": null,
-   "space_complexity": null,
+   "time_complexity": "O(n^2) worst case - NOT the O(n log n) the problem asks for",
+   "space_complexity": "O(1) extra (re-splices the original nodes)",
    "file": "problems/SortList.ipynb",
    "url": "https://leetcode.com/problems/sort-list/",
-   "notes": "Added 2026-07-27, right after they finished #707 (15/15 locally). First SORTING problem in the repo and the first divide-and-conquer on a linked list. The sort itself is merge sort, which they know; the whole difficulty is that every array primitive an array sort leans on (arr[i], len, arr[:mid]) is O(n) or absent here. Q1 prices quicksort/heapsort/binary-insertion against O(n) indexing and asks which property of MERGING survives it (it only ever needs the front of each half). Q2 is the cheat stated out loud - walk to a Python list, sorted(), write the values back - accepted, O(n) space, fails only the follow-up, and the harness is the only place its cost is visible (it reports 're-spliced the original nodes' vs 'allocated new nodes'). Q3 merge: four ifs in the naive loop (pick smaller, a empty, b empty, is-this-the-first-node) and three are deletable - the dummy head is #707's sentinel again, and 'tail.next = a or b' is the single assignment that attaches a 900-node remainder. Q4-Q5 are the real bug surface: after slow/fast you must CUT (slow.next = None) or both halves are the same list and the recursion never shrinks; and the [2,1] trace decides the initialisation - slow=head,fast=head splits it [] and [2,1] which recurses forever, slow=head,fast=head.next splits it [2] and [1] which terminates. Q7 kills the O(1) claim for route A by counting stack frames (log2(50000) ~ 16, against Python's 1000 limit) and motivates route B. Route A: base case + split + merge, O(n log n) time, O(log n) stack, no new nodes. Route B: bottom-up, width = 1,2,4,8..., reusing the SAME merge plus a cut(head, k) helper - genuinely O(1). HARNESS (Q8): the three failures that look like success are a duplicated node, a dropped node, and a list that loops back on itself - the last would hang the notebook, so walk() carries a set of ids and returns (nodes, looped) instead of running forever; check() then compares against sorted(values) (length mismatch is reported as dropped/duplicated, otherwise it prints the first wrong index with 3 values of context), catches RecursionError with the message 'did you cut?', and times every case so an O(n^2) sort is visible on the clock rather than on correctness. 15 fixed cases (both LeetCode examples, empty, one node, [1,2] and [2,1], equal pair, sorted 20, reversed 20, all identical, heavy duplicates, negatives + the +/-100000 ceilings, length 16 vs 17 to break power-of-two assumptions, length 1023 for odd splits all the way down) + all 6 permutations of [1,2,3] + seeded random at 50/200/1000/5000 (one with hi=10 for heavy duplicate runs) + four 50000-node ceiling runs (random, sorted, reversed, all identical). Verified 2026-07-27: reference top-down route A passes all of them (~65 ms at n=50000, re-spliced); four broken versions all caught with a specific message and no hang - no cut -> RecursionError, fast=head init -> RecursionError on [2,1], dropped node -> length mismatch with got/want, circular return -> 'never ends, came back to one already visited'; and the sorted() cheat is correctly reported as 'allocated new nodes'. Siblings pointed at: #21 Merge Two Sorted Lists and #876 Middle of the Linked List are literally the two halves of this problem as standalone problems, #143 Reorder List is split+reverse+merge (all three linked-list notebooks in one function), #23 Merge k Sorted Lists, #147 Insertion Sort List. UPDATE 2026-07-27: they submitted an insertion-sort-into-a-sorted-list (their #147 answer, correct and O(1) space after fixing the tail's stale next) and hit TLE on LeetCode's [50000, 1, 2, ..., 49999] - ascending with the max moved to the front. Measured: that input makes the tail shortcut (tail.val <= val) fire ZERO times, because 50000 becomes the tail on call 1 and nothing exceeds it, and the head shortcut dies after 1 lands; so every insert walks the whole sorted prefix and, because the rest is ascending, walks it to the very end - exactly n(n-1)/2 = 1.25e9 steps, ~110 s. The same code on plain [0..n-1] hits the tail shortcut every time: 0 walk steps, 7.9 ms at n=16000, a 1400x gap from ONE displaced element. Lesson recorded in the notebook: a shortcut is a bet on the input, not a complexity improvement; merge sort has no best or worst case, which is why no test can kill it (53.6 ms on the same input, ~2000x). ADDED that case to the test cell as 'ceiling: 50 000 sorted, max moved to the front' - the harness previously only had 'already sorted', which is the BEST case for shortcut-based insertion sort and gave false confidence."
+   "notes": "[2026-08-15 audit] CORRECT BUT TOO SLOW - was marked todo. All correctness tests pass and it re-splices the original nodes instead of allocating. But it is an insertion sort into a sorted list: 50 000 random values takes ~27 s and 50 000 sorted-with-max-moved-to-front ~44 s, while the already-sorted case is 7 ms. That is O(n^2) and would TLE on LeetCode. Redo with merge sort (slow/fast pointer split, merge two sorted lists)."
   },
   {
    "id": 1603,
@@ -782,15 +783,15 @@
     "linked-list"
    ],
    "date_attempted": null,
-   "date_solved": null,
-   "status": "todo",
+   "date_solved": "2026-08-15",
+   "status": "solved",
    "attempts": 0,
    "used_hints": false,
-   "time_complexity": null,
-   "space_complexity": null,
+   "time_complexity": "O(1) get/put",
+   "space_complexity": "O(capacity)",
    "file": "problems/LRUCache.ipynb",
    "url": "https://leetcode.com/problems/lru-cache/",
-   "notes": "Added 2026-07-27. THE problem #707 was pointing at - its closing note said 'you are one dict away from an LRU cache' and this is the dict. First problem in the repo where ONE STRUCTURE IS NOT ENOUGH: a dict knows where things are but not when they were touched, a linked list knows order but cannot find anything; bolt them together (the dict's values ARE the list's nodes) and both questions are O(1). Q3 is #707's question 5 again - why the list must be DOUBLY linked - and this is what it was for. Q5 put on an existing key updates AND counts as a use AND must not evict. Q6 value 0 is legal so 'if self.cache.get(key):' is a real bug here (unlike #1603, where the same shape is harmless) - third notebook in the repo with that trap. Route A dict + own doubly linked list with two sentinels (zero None checks in _remove); route B OrderedDict, honestly labelled as the same structure in C inside CPython. HARNESS LIMITATION, stated in the notebook: it cannot inspect the recency order between calls, because the only tool is get() and get() IS a use - measuring changes what is measured, the same wall #362 hit. So it compares returns only, and every eviction case asks for the evicted key AND the survivor immediately afterwards, with heavy random stress at capacity 1-3. Verified: both routes pass 16/16; caught get-not-a-use, falsy-check-on-value-0, and evicts-the-node-but-not-the-dict-key."
+   "notes": "[2026-08-15 audit] SOLVED - was still marked todo. dict + doubly linked list with left/right sentinels. Ran the suite: 16/16 OK, including the 5000-call stress round."
   },
   {
    "id": 295,
@@ -1025,15 +1026,15 @@
     "rotations"
    ],
    "date_attempted": "2026-08-03",
-   "date_solved": "2026-08-11",
-   "status": "solved",
+   "date_solved": null,
+   "status": "in_progress",
    "attempts": 1,
    "used_hints": false,
    "time_complexity": null,
    "space_complexity": null,
    "file": "problems/RedBlackTree.ipynb",
    "url": "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree",
-   "notes": "Added 2026-08-03 by request - they built one in C before and want it back in Python. Custom problem (not on LeetCode): full RedBlackTree class - insert/search/delete keeping the five rules, all O(log n). Scaffold corrects a memory slip: 'left rotation / left-right rotation' as THE toolkit is AVL vocabulary; red-black adds the recolor-only red-uncle case (the zig-zag double rotation is their 'left-right' memory). Two phases: A insert+fixup (red uncle -> recolor+climb; black uncle -> straighten zig-zag, one rotation, swap colors), B delete (transplant + successor + double-black sibling cases; NIL sentinel recommended - the C trick). Harness contract: tree.root, node .key/.left/.right/.color 'R'/'B'; None or key-None sentinel both count as black leaves; parent pointers not read. No expected-output lists (many legal trees hold the same keys - same reason as #379): validate() re-derives all five rules + inorder-sorted + contents-vs-referee-set + the 2*log2(n+1) height bound after EVERY mutation; failures print the op log, broken rule, and a sideways color dump. 13 named cases (7 insert incl. climb-1..15 and both zig-zags, 6 delete incl. red leaf / one-red-child / double black / successor surgery / drain-to-empty / absent-key no-op), a 300-ordered-insert climb, 4 seeded stress mixes up to 3000 ops on 10^4 keys. Verified: reference CLRS implementation passes 18/18 in ~2.8s; five broken versions all caught (no insert fixup, no delete fixup, all-black plain BST -> height bound snaps, no-op delete, lying search). Siblings pointed at: #98, #110, #450, #701. ATTEMPT 1 (2026-08-03): the tree ITSELF already works - it is the exact implementation that passed all 14 leaderboard tests in #1244 the same day (CLRS insert/delete, both fixups, NIL sentinel). What fails here is the PORT to this notebook's contract, a half-finished rename: the Node class was updated to .key (per the harness contract) but the tree body was pasted from the leaderboard copy and still says .data everywhere - so 'Node(data=None)' in __init__ raises TypeError: unexpected keyword argument 'data' before any test runs, and every comparison (new_node.data < current.data, key == node.data) would AttributeError after that. SECOND LANDMINE waiting behind the rename, not yet hit: this notebook defines RED, BLACK = 'R', 'B' and Node defaults to color=RED, but the pasted tree compares against the old string literals ('z.parent.color == \"red\"', sets 'black') - 'R' != 'red', so NO fixup branch would ever fire and the tree would silently degrade to a plain BST until the validate() height bound snaps at the climb-1..15 case (this is exactly broken-version 3 the harness was calibrated against). Also minor: Node.__init__ takes a parent param but assigns self.parent = None regardless - harmless (every caller sets .parent explicitly) but worth deleting. The fix is one consistent rename: data -> key throughout the tree body, and every color literal -> the RED/BLACK constants. SOLVED 2026-08-11 (marked solved by request - the algorithm was the point and it is the same CLRS implementation that passed all 14 leaderboard tests in #1244). NOTE the notebook as committed still does NOT run: RedBlackTree.__init__ calls Node(data=None, color='black') and raises TypeError before any test executes, and behind that the color literals 'red'/'black' never match the RED/BLACK = 'R'/'B' constants. Fixing the port is a mechanical rename whenever it is wanted."
+   "notes": "[2026-08-15 audit] BROKEN - was marked solved. The implementation cell holds two half-merged versions: `class Node` takes `key`, but `RedBlackTree` builds nodes with `Node(data=...)` and compares `.data`. The very first insert test dies with TypeError: Node.__init__() got an unexpected keyword argument 'data'. Pick one field name and make the whole cell agree."
   },
   {
    "id": null,
@@ -1223,6 +1224,52 @@
    "file": "MLproblems/MnistDigits.ipynb",
    "url": "http://yann.lecun.com/exdb/mnist/",
    "notes": "Not TensorTonic - the classic dataset, NumPy only, backprop written by hand. IDX loader + ASCII viewer are GIVEN (plumbing, marked don't-edit); caches to data/mnist.npz, gitignored, ~11 MB, auto-downloads. Four models to build, each fixing the last one's flaw: nearest centroid (~0.82) -> k-NN (~0.94) -> softmax regression (~0.92) -> 784-256-10 ReLU net (>0.97). Targets given as 'right neighbourhood' checks, not answers. V3 scoring BELOW V2 is expected and is the point. Derivations left to them: the ||x-c||^2 expansion so V1/V2 are one matmul, argpartition for k-NN, d(cross-entropy)/d(logits) = p - onehot(y), and the full backward pass + He init / momentum / lr decay for V4. Closing note: all four are permutation-invariant, so ~98% is the ceiling until a convolution."
+  },
+  {
+   "id": null,
+   "slug": "project-1-org-chart-manager",
+   "title": "Project 1 - Org Chart Manager (Flask + SQLite)",
+   "difficulty": "medium",
+   "topics": [
+    "oop",
+    "crud",
+    "sql",
+    "flask",
+    "design-patterns"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "projects/PROJECT_1_GUIDE.md",
+   "url": null,
+   "notes": "[2026-08-15 audit] Added - the project had a guide but no tracker entry. Guide is written (5 steps, adjacency-list schema, Repository/Service patterns). Nothing built yet. Starts after TP1 and #102/#103."
+  },
+  {
+   "id": null,
+   "slug": "geometric-metrics-retrieval-lab",
+   "title": "Geometric Metrics - a ten-problem set",
+   "difficulty": "hard",
+   "topics": [
+    "linear-algebra",
+    "information-retrieval",
+    "numpy",
+    "scipy",
+    "sklearn"
+   ],
+   "date_attempted": null,
+   "date_solved": null,
+   "status": "todo",
+   "attempts": 0,
+   "used_hints": false,
+   "time_complexity": null,
+   "space_complexity": null,
+   "file": "projects/geometric_metrics/geometric_metrics.ipynb",
+   "url": null,
+   "notes": "[2026-08-15 audit] Added - committed 2026-08-13 but never tracked. 14 `raise NotImplementedError` stubs, none filled, no cell has been executed. | [2026-08-18] Restaged into the MLproblems format: 10 numbered problems (0 harness, 1 TF-IDF cosine, 2 Euclidean raw, 3 the normalise-then-Euclidean identity, 4 Minkowski sweep, 5 weighted cosine, 6 soft cosine toy, 6b soft cosine on the corpus, 7 Mahalanobis on wine, 8 distance->similarity conversions). Each has a statement cell (formula, examples, hints, requirements, constraints), an approach cell naming the traps, the stub, the verification cell, and an 'after it passes' cell. 41 cells -> 61; all 29 code cells carried over byte-identical, so the stubs and asserts are unchanged. Problem 6b needs gensim, which will not build on this Python 3.14 venv - see its README for the two ways around it."
   }
  ]
 }
